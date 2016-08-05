@@ -31,7 +31,7 @@ public class StockExchangeService
     {
         List<StockDTO> stockDTOs = new ArrayList<StockDTO>();
         String[] newSymbols = stockSymbols.toArray(new String[stockSymbols.size()]);
-        Map<String, Stock> stocks = YahooFinance.get(newSymbols); // single request
+        Map<String, Stock> stocks = YahooFinance.get(newSymbols);
 
         for (Map.Entry<String, Stock> stock : stocks.entrySet())
         {

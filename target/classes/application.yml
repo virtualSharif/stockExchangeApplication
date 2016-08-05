@@ -1,5 +1,0 @@
-input:
-  filename: Stocks.txt
- 
-output:
-  filename: stock-information-output.csv

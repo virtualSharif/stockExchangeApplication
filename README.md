@@ -26,7 +26,7 @@ To be executed within 30 seconds.
 -To run the application using maven build use below command:
 `clean install spring-boot:run`
 
-Note : Output file name is taken from application.yml
+Note : Output file name is taken from application.yml (i.e stock-information-output.csv)
 
 ### Exception thrown at runtime
 Currently application is also throwing the exception while running the application :

@@ -3,8 +3,7 @@ package com.pubmatic.sm.business;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,20 +36,13 @@ public class StockExchangeService
         {
             StockDTO stockDTO = new StockDTO();
             stockDTO.setStockSymbol(stock.getKey());
-            if (isSymbolInvalid(stock.getKey()))
+            if (isStockInvalid(stock))
             {
-                String invalidValue = new String("-1");
-                stockDTO.setCurrentPrice(invalidValue);
-                stockDTO.setYearTargetPrice(invalidValue);
-                stockDTO.setYearHigh(invalidValue);
-                stockDTO.setYearLow(invalidValue);
+                createInvalidStockDTO(stockDTO);
             }
             else
             {
-                stockDTO.setCurrentPrice(stock.getValue().getQuote().getPrice().toString());
-                stockDTO.setYearTargetPrice(stock.getValue().getStats().getOneYearTargetPrice().toString());
-                stockDTO.setYearHigh(stock.getValue().getQuote().getYearHigh().toString());
-                stockDTO.setYearLow(stock.getValue().getQuote().getYearLow().toString());
+                createValidStockDTO(stock, stockDTO);
             }
             LOGGER.info(stockDTO.toString());
             stockDTOs.add(stockDTO);
@@ -58,11 +50,32 @@ public class StockExchangeService
         return stockDTOs;
     }
 
-    private boolean isSymbolInvalid(String symbolName)
+    private void createValidStockDTO(Map.Entry<String, Stock> stock, StockDTO stockDTO)
     {
-        Pattern pattern = Pattern.compile("[a-zA-Z]*");
-        Matcher matcher = pattern.matcher(symbolName);
-        return !matcher.matches() ? true : false;
+        stockDTO.setCurrentPrice(stock.getValue().getQuote().getPrice().toString());
+        stockDTO.setYearTargetPrice(stock.getValue().getStats().getOneYearTargetPrice().toString());
+        stockDTO.setYearHigh(stock.getValue().getQuote().getYearHigh().toString());
+        stockDTO.setYearLow(stock.getValue().getQuote().getYearLow().toString());
     }
 
+    private void createInvalidStockDTO(StockDTO stockDTO)
+    {
+        String invalidValue = new String("-1");
+        stockDTO.setCurrentPrice(invalidValue);
+        stockDTO.setYearTargetPrice(invalidValue);
+        stockDTO.setYearHigh(invalidValue);
+        stockDTO.setYearLow(invalidValue);
+    }
+
+    private boolean isStockInvalid(Entry<String, Stock> stock)
+    {
+        if (stock.getValue().getQuote().getPrice().toString().equals("0"))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

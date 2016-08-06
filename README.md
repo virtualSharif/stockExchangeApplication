@@ -15,7 +15,7 @@ Output last lines :
 
 c.pubmatic.sm.StockExchangeApplication   : Started StockExchangeApplication in 3.963 seconds (JVM running for 4.401)
 
-Expected :
+Expected Output Time:
 To be executed within 30 seconds.
 
 

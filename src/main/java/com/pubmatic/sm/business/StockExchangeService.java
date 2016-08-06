@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class StockExchangeService
     {
         List<StockDTO> stockDTOs = new ArrayList<StockDTO>();
         String[] newSymbols = stockSymbols.toArray(new String[stockSymbols.size()]);
-        Map<String, Stock> stocks = YahooFinance.get(newSymbols);
+        Map<String, Stock> stocks = new TreeMap<String, Stock>(YahooFinance.get(newSymbols));
 
         for (Map.Entry<String, Stock> stock : stocks.entrySet())
         {

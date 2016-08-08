@@ -1,13 +1,12 @@
 package com.pubmatic.sm.business;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.pubmatic.sm.model.StockDTO;
@@ -25,9 +24,9 @@ import yahoofinance.YahooFinance;
 @Component
 public class StockExchangeService
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(StockExchangeService.class);
+    private static final String INVALID_VALUE = "-1";
 
-    public List<StockDTO> getInformation(List<String> stockSymbols)
+    public List<StockDTO> getInformation(List<String> stockSymbols) throws IOException
     {
         List<StockDTO> stockDTOs = new ArrayList<StockDTO>();
         String[] newSymbols = stockSymbols.toArray(new String[stockSymbols.size()]);
@@ -37,46 +36,66 @@ public class StockExchangeService
         {
             StockDTO stockDTO = new StockDTO();
             stockDTO.setStockSymbol(stock.getKey());
-            if (isStockInvalid(stock))
-            {
-                createInvalidStockDTO(stockDTO);
-            }
-            else
-            {
-                createValidStockDTO(stock, stockDTO);
-            }
-            LOGGER.info(stockDTO.toString());
+            createStockDTO(stock, stockDTO);
             stockDTOs.add(stockDTO);
         }
         return stockDTOs;
     }
 
-    private void createValidStockDTO(Map.Entry<String, Stock> stock, StockDTO stockDTO)
+    private void createStockDTO(Entry<String, Stock> stock, StockDTO stockDTO)
     {
-        stockDTO.setCurrentPrice(stock.getValue().getQuote().getPrice().toString());
-        stockDTO.setYearTargetPrice(stock.getValue().getStats().getOneYearTargetPrice().toString());
-        stockDTO.setYearHigh(stock.getValue().getQuote().getYearHigh().toString());
-        stockDTO.setYearLow(stock.getValue().getQuote().getYearLow().toString());
+        if (isStockQuotePriceExists(stock.getValue()))
+        {
+            stockDTO.setCurrentPrice(stock.getValue().getQuote().getPrice().toString());
+            stockDTO.setYearHigh(stock.getValue().getQuote().getYearHigh().toString());
+            stockDTO.setYearLow(stock.getValue().getQuote().getYearLow().toString());
+            if (isStockStatExists(stock.getValue()))
+            {
+                stockDTO.setYearTargetPrice(stock.getValue().getStats().getOneYearTargetPrice().toString());
+
+            }
+            else
+            {
+                stockDTO.setYearTargetPrice(INVALID_VALUE);
+            }
+
+        }
+        else
+        {
+            createInvalidStockDTO(stockDTO);
+        }
     }
 
     private void createInvalidStockDTO(StockDTO stockDTO)
     {
-        String invalidValue = new String("-1");
-        stockDTO.setCurrentPrice(invalidValue);
-        stockDTO.setYearTargetPrice(invalidValue);
-        stockDTO.setYearHigh(invalidValue);
-        stockDTO.setYearLow(invalidValue);
+        stockDTO.setCurrentPrice(INVALID_VALUE);
+        stockDTO.setYearTargetPrice(INVALID_VALUE);
+        stockDTO.setYearHigh(INVALID_VALUE);
+        stockDTO.setYearLow(INVALID_VALUE);
     }
 
-    private boolean isStockInvalid(Entry<String, Stock> stock)
+    private boolean isStockQuotePriceExists(Stock stock)
     {
-        if (stock.getValue().getQuote().getPrice().toString().equals("0"))
-        {
-            return true;
-        }
-        else
+        if (stock.getQuote().getPrice() == null)
         {
             return false;
         }
+        else
+        {
+            return true;
+        }
     }
+
+    private boolean isStockStatExists(Stock stock)
+    {
+        if (stock.getStats().getOneYearTargetPrice() == null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
 }

@@ -1,4 +1,4 @@
-Sample Test Application | @Author : Sharif Malik
+Test : Stock Exchange Application | @Author : Sharif Malik
 ============================
 Note : Solution is solved using
 i.	Spring Tool Suite,

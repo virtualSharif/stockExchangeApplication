@@ -1,4 +1,4 @@
-Test for Pubmatic  @Author : Sharif Malik
+Sample Test Application | @Author : Sharif Malik
 ============================
 Note : Solution is solved using
 i.	Spring Tool Suite,
